@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacts</title>
+</head>
+<body >
+    <contact-registration class="container"></contact-registration>
+</body>
+<script src="contact-form.js"></script>
+<script src="contact-list.js"></script>
+<script>
+
+    class ContactsBehaviour
+    {
+        _contacts = [];
+        get contacts() { return this._contacts; }
+        saveContact(contact) {
+            this._contacts.push(contact);
+        }
+        removeContact(contact) {
+            const index = this._contacts.findIndex(c => c.id == contact.id)
+            this._contacts.splice(index, 1);
+        }
+        editContact(contact) {
+            const index = this._contacts.findIndex(c => c.id == contact.id)
+            this._contacts[index] = contact;
+        }   
+        searchContact(contact) {
+            return this._contacts.find(c => c.id == contact.id);
+        }
+    }
+
+    class ContactRegistrationScreen extends HTMLElement
+    {
+        constructor(){
+            super();
+            const eventName = "saveData";
+            this.behaviour = new ContactsBehaviour();
+            this._shadowRoot = this.attachShadow({mode: "open"});
+            const list = Object.assign(new ContactList(),{id:"contacts"});
+            const form = Object.assign(document.createElement("contact-form"),{ id:"form" });
+            form.dataset.saveEvent = eventName;
+            this._shadowRoot.addEventListener(eventName, (ev) => 
+            {
+                const contact = ev.detail;
+                this.behaviour.saveContact(contact);
+                const contacts = this._shadowRoot.getElementById("contacts");
+                contacts.setAttribute("data-contacts", JSON.stringify(this.behaviour.contacts));
+            });
+            const htmlContent = `${form.outerHTML}<br/><br/><h3>Contacts: </h3>${list.outerHTML}`;
+            this._shadowRoot.innerHTML = htmlContent;
+        }
+    }
+    customElements.define('contact-registration', ContactRegistrationScreen);
+    
+</script>
+</html>
