@@ -8,13 +8,11 @@ class ContactList extends HTMLElement {
     }
     
     build(elements){
-        this._shadowRoot.innerHTML = "";
-        const ul = document.createElement("ul");
+        const ul = this._shadowRoot.getElementById("contactList");
+        ul.innerHTML = "";
         const createLi = (contact) => ul.appendChild(Object.assign(document.createElement("li"), 
                                                     {innerHTML: `${contact.name} <br/> ${contact.phone}`}));
         elements.map(createLi);
-
-        this._shadowRoot.appendChild(ul);
     }
     
     attributeChangedCallback(name, oldValue, newValue) {
